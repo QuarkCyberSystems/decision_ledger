@@ -21,6 +21,16 @@ app_license = "mit"
 # 	}
 # ]
 
+
+doc_events = {
+    "Decision": {
+        "on_submit": "decision_ledger.decision_ledger.notify.notify_raven"
+    }
+}
+
+after_install = "decision_ledger.install.after_install"
+
+
 # Includes in <head>
 # ------------------
 

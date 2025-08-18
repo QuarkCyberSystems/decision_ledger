@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-18 23:36:42.427083",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "decision_area",
+  "proposed_by",
+  "column_break_khvd",
+  "decision_status",
+  "decision_impact_type",
+  "reference",
+  "description_section",
+  "description",
+  "section_break_cjir",
+  "options_considered",
+  "column_break_ufxw",
+  "rationale",
+  "section_break_avjg",
+  "impact_details",
+  "section_break_g8de",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_g8de",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Decision Ledger",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "decision_area",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Decision Area",
+   "options": "Decision Area",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_khvd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "decision_status",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Decision Status",
+   "options": "Decision Status",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "in_list_view": 1,
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_cjir",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "options_considered",
+   "fieldtype": "Text Editor",
+   "label": "Options Considered"
+  },
+  {
+   "fieldname": "column_break_ufxw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rationale",
+   "fieldtype": "Text Editor",
+   "label": "Rationale"
+  },
+  {
+   "fieldname": "decision_impact_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Decision Impact Type",
+   "options": "Decision Impact Type",
+   "reqd": 1
+  },
+  {
+   "description": "github/docs link",
+   "fieldname": "reference",
+   "fieldtype": "Data",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "section_break_avjg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "impact_details",
+   "fieldtype": "Text Editor",
+   "label": "Impact Details"
+  },
+  {
+   "fieldname": "proposed_by",
+   "fieldtype": "Link",
+   "label": "Proposed By",
+   "options": "User"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-18 23:56:31.551754",
+ "modified_by": "Administrator",
+ "module": "Decision Ledger",
+ "name": "Decision Ledger",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
