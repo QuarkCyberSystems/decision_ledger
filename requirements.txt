@@ -1,0 +1,3 @@
+# Pin known-good versions to keep Raven AI stable
+openai==1.99.9
+agents>=0.2.0
