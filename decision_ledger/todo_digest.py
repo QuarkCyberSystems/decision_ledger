@@ -18,12 +18,24 @@ def _range_month(date):
     return start, end
 
 def fetch_user_todos(user: str):
-    """Active ToDos for a user (status != Closed)."""
+    """Active ToDos for a user (status != Closed). Order: dated first, undated last."""
     return frappe.get_all(
         "ToDo",
-        filters={"allocated_to": user, "status": ["!=", "Closed"]},
-        fields=["name", "description", "date", "reference_type", "reference_name", "priority", "status"],
-        order_by="date asc nulls last, modified desc"
+        filters={
+            "allocated_to": user,
+            "status": ["!=", "Closed"],
+        },
+        fields=[
+            "name", "description", "date",
+            "reference_type", "reference_name",
+            "priority", "status", "modified"
+        ],
+        # Portable "NULLS LAST" using a CASE expression
+        order_by=(
+            "CASE WHEN `tabToDo`.`date` IS NULL THEN 1 ELSE 0 END ASC, "
+            "`tabToDo`.`date` ASC, "
+            "`tabToDo`.`modified` DESC"
+        ),
     )
 
 def group_todos(user: str):
