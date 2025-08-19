@@ -98,19 +98,36 @@ def _bot():
     return frappe.get_doc("Raven Bot", "todo-bot")
 
 @frappe.whitelist()
-def agent_todo_digest(user_email: str | None = None, mode: str = "summary", preview_per_section: int = 2, send_dm: int = 1):
+def agent_todo_digest(args=None, user_email: str | None = None, mode: str = "summary",
+                      preview_per_section: int = 2, send_dm: int = 1):
     """
     Raven Agent Function: return and/or DM the user's ToDo digest.
 
-    Args:
-      user_email (str|None): target user; defaults to caller if missing
-      mode (str): "summary" or "full"
-      preview_per_section (int): for summary mode, top-N previews (default 2)
-      send_dm (int): 1/0 – DM the user via todo-bot in addition to returning text
+    Supports two call styles:
+      1) agent passes a single dict: agent_todo_digest(args)
+      2) normal RPC passes kwargs: agent_todo_digest(user_email=..., mode=..., ...)
 
-    Returns:
-      dict: { "ok": True, "user": "<email>", "mode": "...", "markdown": "<text>" }
+    Args in dict form:
+      { "user_email": "...", "mode": "summary|full", "preview_per_section": 2, "send_dm": 1 }
     """
+    # --- Unpack if called with a single dict positional argument ---
+    if isinstance(args, dict):
+        user_email = args.get("user_email", user_email)
+        mode = args.get("mode", mode) or "summary"
+        preview_per_section = int(args.get("preview_per_section", preview_per_section or 2) or 2)
+        send_dm = int(args.get("send_dm", send_dm or 1) or 1)
+
+    # If agent sent JSON string in args (rare), try to parse
+    if isinstance(args, str) and args.strip().startswith("{"):
+        try:
+            d = frappe.parse_json(args)
+            user_email = d.get("user_email", user_email)
+            mode = d.get("mode", mode) or "summary"
+            preview_per_section = int(d.get("preview_per_section", preview_per_section or 2) or 2)
+            send_dm = int(d.get("send_dm", send_dm or 1) or 1)
+        except Exception:
+            pass  # fall back to defaults
+
     user = user_email or frappe.session.user
     if mode == "full":
         md = format_todo_markdown(user)
