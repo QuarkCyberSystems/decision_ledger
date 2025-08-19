@@ -1,5 +1,7 @@
 import frappe
 from frappe.utils import nowdate, cstr, flt
+from .todo_digest import format_todo_markdown
+from .todo_bot_tasks import send_full_digest_to_user, send_summary_to_user
 
 @frappe.whitelist()
 def create_task(subject, project=None, team_member=None, budgeted_hours=None, assign_to=None,
@@ -64,3 +66,29 @@ def create_task(subject, project=None, team_member=None, budgeted_hours=None, as
         result["todo"] = todo.name
 
     return result
+
+
+
+
+
+@frappe.whitelist()  # called inside a logged-in Raven session
+def todo_digest_for(user: str = None):
+    """Return grouped ToDo digest markdown for a user (defaults to current)."""
+    u = user or frappe.session.user
+    # Hard guard: only the user themselves or System Manager can request others' digests
+    if user and user != frappe.session.user and not frappe.has_permission("User", "read"):
+        frappe.throw("Not permitted", frappe.PermissionError)
+    return {"ok": True, "user": u, "markdown": format_todo_markdown(u)}
+
+
+
+
+@frappe.whitelist()
+def mytodos_full():
+    send_full_digest_to_user(frappe.session.user)
+    return {"ok": True}
+
+@frappe.whitelist()
+def mytodos_summary(preview_per_section: int = 2):
+    send_summary_to_user(frappe.session.user, int(preview_per_section))
+    return {"ok": True}

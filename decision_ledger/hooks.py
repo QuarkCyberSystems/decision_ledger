@@ -25,6 +25,15 @@ app_license = "mit"
 
 after_install = "decision_ledger.install.after_install"
 
+scheduler_events = {
+    # 05:00 UTC ≈ 09:00 Asia/Dubai
+    "cron": {
+        "0 4 * * *": ["decision_ledger.decision_ledger.schedules.send_daily_summaries"],
+        # Weekly full digest every Monday 05:00 UTC
+        "0 4 * * MON": ["decision_ledger.decision_ledger.schedules.send_weekly_full"],
+    }
+}
+
 
 # Includes in <head>
 # ------------------
