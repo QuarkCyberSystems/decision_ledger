@@ -1,6 +1,6 @@
 import frappe
 from frappe.utils import nowdate, cstr, flt
-from .todo_digest import format_todo_markdown
+from .todo_digest import format_todo_markdown, format_todo_summary_markdown
 from .todo_bot_tasks import send_full_digest_to_user, send_summary_to_user
 
 @frappe.whitelist()
@@ -92,3 +92,32 @@ def mytodos_full():
 def mytodos_summary(preview_per_section: int = 2):
     send_summary_to_user(frappe.session.user, int(preview_per_section))
     return {"ok": True}
+
+
+def _bot():
+    return frappe.get_doc("Raven Bot", "todo-bot")
+
+@frappe.whitelist()
+def agent_todo_digest(user_email: str | None = None, mode: str = "summary", preview_per_section: int = 2, send_dm: int = 1):
+    """
+    Raven Agent Function: return and/or DM the user's ToDo digest.
+
+    Args:
+      user_email (str|None): target user; defaults to caller if missing
+      mode (str): "summary" or "full"
+      preview_per_section (int): for summary mode, top-N previews (default 2)
+      send_dm (int): 1/0 – DM the user via todo-bot in addition to returning text
+
+    Returns:
+      dict: { "ok": True, "user": "<email>", "mode": "...", "markdown": "<text>" }
+    """
+    user = user_email or frappe.session.user
+    if mode == "full":
+        md = format_todo_markdown(user)
+    else:
+        md = format_todo_summary_markdown(user, int(preview_per_section))
+
+    if int(send_dm):
+        _bot().send_direct_message(user_id=user, text=md, markdown=True)
+
+    return {"ok": True, "user": user, "mode": mode, "markdown": md}
