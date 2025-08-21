@@ -35,6 +35,11 @@ scheduler_events = {
 }
 
 
+page_js = {
+    "project-ops": "public/js/project_ops.js",
+}
+
+
 # Includes in <head>
 # ------------------
 
