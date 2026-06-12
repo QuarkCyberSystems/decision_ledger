@@ -1,6 +1,7 @@
 
 import frappe
 from .todo_digest import format_todo_markdown
+from .raven_utils import raven_available, log_raven_skip
 
 def _get_users_with_open_todos():
     rows = frappe.db.sql("""
@@ -48,6 +49,9 @@ def _send_dm(user_email: str, markdown: str):
 
 def send_daily_todo_digests():
     """Cron: run once a day (05:00 UTC) and DM all users their ToDo digest."""
+    if not raven_available():
+        log_raven_skip("Skipping ToDo digests: Raven is not installed")
+        return
     users = _get_users_with_open_todos()
     for u in users:
         try:

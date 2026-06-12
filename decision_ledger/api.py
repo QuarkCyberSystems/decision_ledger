@@ -2,6 +2,9 @@ import frappe
 from frappe.utils import nowdate, cstr, flt, cint
 from .todo_digest import format_todo_markdown, format_todo_summary_markdown
 from .todo_bot_tasks import send_full_digest_to_user, send_summary_to_user
+from .raven_utils import raven_available
+
+RAVEN_UNAVAILABLE_MSG = "Raven is not installed; ToDo digest was not delivered."
 
 @frappe.whitelist()
 def create_task(subject, project=None, team_member=None, budgeted_hours=None, assign_to=None,
@@ -80,13 +83,15 @@ def todo_digest_for(user: str = None):
 
 @frappe.whitelist()
 def mytodos_full():
-    send_full_digest_to_user(frappe.session.user)
-    return {"ok": True}
+    delivered = send_full_digest_to_user(frappe.session.user)
+    return {"ok": True, "delivered": delivered,
+            "message": None if delivered else RAVEN_UNAVAILABLE_MSG}
 
 @frappe.whitelist()
 def mytodos_summary(preview_per_section: int = 2):
-    send_summary_to_user(frappe.session.user, int(preview_per_section))
-    return {"ok": True}
+    delivered = send_summary_to_user(frappe.session.user, int(preview_per_section))
+    return {"ok": True, "delivered": delivered,
+            "message": None if delivered else RAVEN_UNAVAILABLE_MSG}
 
 
 def _bot():
@@ -129,10 +134,15 @@ def agent_todo_digest(args=None, user_email: str | None = None, mode: str = "sum
     else:
         md = format_todo_summary_markdown(user, int(preview_per_section))
 
-    if int(send_dm):
+    delivered = False
+    if int(send_dm) and raven_available():
         _bot().send_direct_message(user_id=user, text=md, markdown=True)
+        delivered = True
 
-    return {"ok": True, "user": user, "mode": mode, "markdown": md}
+    result = {"ok": True, "user": user, "mode": mode, "markdown": md, "delivered": delivered}
+    if int(send_dm) and not delivered:
+        result["message"] = RAVEN_UNAVAILABLE_MSG
+    return result
 
 
 @frappe.whitelist()
